@@ -1,9 +1,4 @@
-local success, library = pcall(loadstring, game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))
-
-if not success or not library then
-    error("Failed to load the library. Please check the URL or your internet connection.")
-end
-
+local library = loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
 local window = library:AddWindow("HELL clan Script by darkiller", { main_color = Color3.fromRGB(41, 74, 122), min_size = Vector2.new(600, 550), can_resize = false })
 
 -- Whitelist system using usernames
@@ -31,12 +26,9 @@ end
 
 local Paid = window:AddTab("Paid")
 
-local fastRebirthActive = false -- Debounce flag
-
 Paid:AddSwitch("Fast Rebirth", function(bool)
     fastRebirth = bool
-    if fastRebirth and not fastRebirthActive then
-        fastRebirthActive = true -- Set the flag to true to prevent re-entry
+    if fastRebirth then
         spawn(function()
             local a = game:GetService("ReplicatedStorage")
             local b = game:GetService("Players")
@@ -45,7 +37,6 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
             -- Check if petsFolder exists
             if not c:FindFirstChild("petsFolder") then
                 error("petsFolder not found.")
-                fastRebirthActive = false -- Reset the flag on error
                 return
             end
             
@@ -54,9 +45,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 for g, h in pairs(f:GetChildren()) do
                     if h:IsA("Folder") then
                         for i, j in pairs(h:GetChildren()) do
-                            if a.rEvents and a.rEvents.equipPetEvent then
-                                a.rEvents.equipPetEvent:FireServer("unequipPet", j)
-                            end
+                            a.rEvents.equipPetEvent:FireServer("unequipPet", j)
                         end
                     end
                 end
@@ -67,7 +56,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 d()
                 task.wait(.01)
                 for m, n in pairs(c.petsFolder.Unique:GetChildren()) do
-                    if n.Name == l and a.rEvents and a.rEvents.equipPetEvent then
+                    if n.Name == l then
                         a.rEvents.equipPetEvent:FireServer("equipPet", n)
                     end
                 end
@@ -105,9 +94,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 k("Swift Samurai")
                 while c.leaderstats and c.leaderstats.Strength and c.leaderstats.Strength.Value < w do
                     for y = 1, 10 do
-                        if c.muscleEvent then
-                            c.muscleEvent:FireServer("rep")
-                        end
+                        c.muscleEvent:FireServer("rep")
                     end
                     task.wait()
                 end
@@ -116,25 +103,19 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 k("Tribal Overlord")
                 local z = o("Jungle Bar Lift")
                 if z and z:FindFirstChild("interactSeat") then
-                    if c.Character and c.Character:FindFirstChild("HumanoidRootPart") then
-                        c.Character.HumanoidRootPart.CFrame = z.interactSeat.CFrame * CFrame.new(0, 3, 0)
-                    end
+                    c.Character.HumanoidRootPart.CFrame = z.interactSeat.CFrame * CFrame.new(0, 3, 0)
                     repeat
                         task.wait(.1)
                         t()
-                    until c.Character and c.Character.Humanoid and c.Character.Humanoid.Sit
+                    until c.Character.Humanoid.Sit
                 end
                 local A = c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value or 0
                 repeat
-                    if a.rEvents and a.rEvents.rebirthRemote then
-                        a.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-                    end
+                    a.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
                     task.wait(.1)
                 until c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value > A
                 task.wait()
             end
-            
-            fastRebirthActive = false -- Reset the flag when done
         end)
     end
 end)
@@ -145,9 +126,7 @@ local switch = Paid:AddSwitch("Fast Strength", function(Value)
     local function FastRep()
         while _G.RepOP do
             for _ = 1, 400 do
-                if game:GetService("Players").LocalPlayer.muscleEvent then
-                    game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
-                end
+                game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
             end
             task.wait()
         end
