@@ -145,20 +145,16 @@ local switchHideFrame = Paid:AddSwitch("Hide Frame", function(bool)
     end
 end)
 
-local Paid = window:AddTab("Position and Teleport")
+local PositionAndTeleport = window:AddTab("Position and Teleport")
 
-Position and Teleport:AddSwitch("lockposition", function(bool)
-    fastRebirth = bool
-    if lockposition then
-        spawn(function()
-           local Players = game:GetService("Players")
-           local plr = Players.LocalPlayer
-           local character = plr.Character or plr.CharacterAdded:Wait()
-           local hrp = character:WaitForChild("HumanoidRootPart")
-           local rs = game:GetService("RunService")
-           local lockpos = false
-           local cp = nil
+PositionAndTeleport:AddSwitch("lockposition", function(bool)
+    lockpos = bool  -- Cambia el estado de lockpos según el interruptor
+    if lockpos then
+        cp = nil  -- Reinicia cp cuando se activa el bloqueo
+    end
+end)
 
+-- Conexión al evento Heartbeat para bloquear la posición
 rs.Heartbeat:Connect(function()
     if lockpos then
         if not cp then
