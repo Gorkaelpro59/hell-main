@@ -162,5 +162,3 @@ rs.Heartbeat:Connect(function()
         hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
     end
 end)
-    end
-end)
