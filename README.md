@@ -144,3 +144,31 @@ local switchHideFrame = Paid:AddSwitch("Hide Frame", function(bool)
         end
     end
 end)
+
+local Paid = window:AddTab("Position and Teleport")
+
+Position and Teleport:AddSwitch("lockposition", function(bool)
+    fastRebirth = bool
+    if lockposition then
+        spawn(function()
+
+        
+local Players = game:GetService("Players")
+local plr = Players.LocalPlayer
+local character = plr.Character or plr.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local rs = game:GetService("RunService")
+
+local lockpos = false
+local cp = nil
+
+rs.Heartbeat:Connect(function()
+    if lockpos then
+        if not cp then
+            cp = hrp.Position
+        end
+        hrp.CFrame = CFrame.new(cp)
+    else
+        cp = nil
+    end
+end)
