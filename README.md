@@ -127,7 +127,7 @@ local switch = Paid:AddSwitch("Fast Strength", function(Value)
     if not Value then return end
     local function FastRep()
         while _G.RepOP do
-            for _ = 1, 400 do
+            for _ = 1, 200 do
                 game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
             end
             task.wait()
