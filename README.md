@@ -150,18 +150,17 @@ local PositionAndTeleport = window:AddTab("Position and Teleport")
 PositionAndTeleport:AddSwitch("lockposition", function(bool)
     lockpos = bool  -- Cambia el estado de lockpos según el interruptor
     if lockpos then
-        cp = nil  -- Reinicia cp cuando se activa el bloqueo
+        cp = hrp.Position  -- Guarda la posición actual al activar el bloqueo
     end
 end)
 
 -- Conexión al evento Heartbeat para bloquear la posición
 rs.Heartbeat:Connect(function()
     if lockpos then
-        if not cp then
-            cp = hrp.Position
-        end
-        hrp.CFrame = CFrame.new(cp)
-    else
-        cp = nil
+        hrp.CFrame = CFrame.new(cp)  -- Mantiene al jugador en la posición guardada
+        hrp.Velocity = Vector3.new(0, 0, 0)  -- Detiene cualquier movimiento
+        hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
+    end
+end)
     end
 end)
