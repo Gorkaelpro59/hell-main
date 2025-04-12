@@ -181,7 +181,6 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
 
     local snacks = {
         "TOUGH Bar",
-        "Protein Egg",
         "Protein Bar",
         "Tropical Shake",
         "Energy Shake",
