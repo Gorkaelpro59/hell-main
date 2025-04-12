@@ -212,68 +212,74 @@ end)
 local Afk = window:AddTab("Afk")
 
 Afk:AddSwitch("Anti Afk", function(bool)
-local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
-local UIS = game:GetService("UserInputService")
+    local Players = game:GetService("Players")
+    local VirtualUser  = game:GetService("VirtualUser ")
+    local UIS = game:GetService("User InputService")
 
-Players.LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new())
-end)
+    Players.LocalPlayer.Idled:Connect(function()
+        Virtual:User CaptureController()
+        Virtual:User ClickButton2(Vector2.new())
+    end)
 
--- Create GUI
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TitleLabel = Instance.new("TextLabel")
-local TimerLabel = Instance.new("TextLabel")
-local UICorner = Instance.new("UICorner")  -- Add UICorner to adjust corners
+    -- Create GUI
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local TitleLabel = Instance.new("TextLabel")
+    local TimerLabel = Instance.new("TextLabel")
+    local UICorner = Instance.new("UICorner")  -- Add UICorner to adjust corners
 
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Background (White)
-Frame.Parent = ScreenGui
-Frame.Size = UDim2.new(0, 250, 0, 90)
-Frame.Position = UDim2.new(0.5, -125, 0.1, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White
-Frame.BackgroundTransparency = 0 -- Not Transparent
+    -- Background (White)
+    Frame.Parent = ScreenGui
+    Frame.Size = UDim2.new(0, 250, 0, 90)
+    Frame.Position = UDim2.new(0.5, -125, 0.1, 0)
+    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White
+    Frame.BackgroundTransparency = 0 -- Not Transparent
 
--- Add UICorner to adjust rounded corners
-UICorner.Parent = Frame
-UICorner.CornerRadius = UDim.new(0, 20) -- Set corner radius
+    -- Add UICorner to adjust rounded corners
+    UICorner.Parent = Frame
+    UICorner.CornerRadius = UDim.new(0, 20) -- Set corner radius
 
--- Main text (Light Pink)
-TitleLabel.Parent = Frame
-TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
-TitleLabel.Position = UDim2.new(0, 0, 0, 0)
-TitleLabel.Text = "ANTI-AFK BY Darkiller"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.TextScaled = true
-TitleLabel.Font = Enum.Font.SourceSansBold
+    -- Main text (Light Pink)
+    TitleLabel.Parent = Frame
+    TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+    TitleLabel.Text = "ANTI-AFK BY Darkiller"
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.TextScaled = true
+    TitleLabel.Font = Enum.Font.SourceSansBold
 
--- Timer text (Light Pink)
-TimerLabel.Parent = Frame
-TimerLabel.Size = UDim2.new(1, 0, 0.5, 0)
-TimerLabel.Position = UDim2.new(0, 0, 0.5, 0)
-TimerLabel.Text = "Time: 00:00:00"
-TimerLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-TimerLabel.BackgroundTransparency = 1
-TimerLabel.TextScaled = true
-TimerLabel.Font = Enum.Font.SourceSansBold
+    -- Timer text (Light Pink)
+    TimerLabel.Parent = Frame
+    TimerLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    TimerLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    TimerLabel.Text = "Time: 00:00:00"
+    TimerLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
+    TimerLabel.BackgroundTransparency = 1
+    TimerLabel.TextScaled = true
+    TimerLabel.Font = Enum.Font.SourceSansBold
 
--- Dragging functionality
-local dragging
-local dragInput
-local dragStart
-local startPos
+    -- Dragging functionality
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
 
-local function update(input)
-    local delta = input.Position - dragStart
-    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
+    local function update(input)
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 
-Frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    Frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         startPos = Frame.Position
