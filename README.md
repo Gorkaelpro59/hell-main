@@ -12,7 +12,8 @@ local whitelist = {
     "HoloGrindz",
     "Xxdarkiller_10ZKT2",
     "TARZANfeio",
-    "Pathaan122378",
+    "Pathaan122378",    
+    "Gorkaelpro59",
 }
 
 local player = game.Players.LocalPlayer
@@ -104,10 +105,8 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 task.wait(.1)
                 k("Swift Samurai")
                 while c.leaderstats and c.leaderstats.Strength and c.leaderstats.Strength.Value < w do
-                    for y = 1, 10 do
-                        if c.muscleEvent then
-                            c.muscleEvent:FireServer("rep")
-                        end
+                    if c.muscleEvent then
+                        c.muscleEvent:FireServer("rep")
                     end
                     task.wait()
                 end
@@ -270,3 +269,4 @@ AutoeatProteins:AddSwitch("Autoeat Proteins", function(bool)
     -- Start the auto consume when the button is clicked
     StartButton.MouseButton1Click:Connect(function()
         if StartButton.Text == "Start
+
