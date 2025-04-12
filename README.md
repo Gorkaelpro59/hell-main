@@ -1,4 +1,7 @@
-local success, library = pcall(loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true)))
+local success, library = pcall(function()
+    return loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
+end)
+
 if not success or not library then
     error("Failed to load library.")
 end
@@ -264,4 +267,9 @@ AutoeatProteins:AddSwitch("Autoeat Proteins", function(bool)
     StartButton.TextSize = 24
     StartButton.Parent = Frame
     StartButton.Active = true
-   
+    StartButton.Draggable = true
+
+    -- Start the auto consume when the button is clicked
+    StartButton.MouseButton1Click:Connect(function()
+        if StartButton.Text == "Start
+
