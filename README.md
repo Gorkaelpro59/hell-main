@@ -1,4 +1,8 @@
-local library = loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
+local success, library = pcall(loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true)))
+if not success or not library then
+    error("Failed to load library.")
+end
+
 local window = library:AddWindow("HELL clan Script by darkiller", { main_color = Color3.fromRGB(41, 74, 122), min_size = Vector2.new(600, 550), can_resize = false })
 
 -- Whitelist system using usernames
@@ -9,7 +13,6 @@ local whitelist = {
     "Xxdarkiller_10ZKT2",
     "TARZANfeio",
     "Pathaan122378",
-    "Gorkaelpro59",
 }
 
 local player = game.Players.LocalPlayer
