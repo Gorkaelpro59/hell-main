@@ -171,7 +171,7 @@ PositionAndTeleport:AddSwitch("lockposition", function(bool)
 end)
 
 -- Conexión al evento Heartbeat para bloquear la posición
-rs.Heartbeat:Connect(function()
+game:GetService("RunService").Heartbeat:Connect(function()
     if lockpos and hrp then
         hrp.CFrame = CFrame.new(cp)  -- Mantiene al jugador en la posición guardada
         hrp.Velocity = Vector3.new(0, 0, 0)  -- Detiene cualquier movimiento
@@ -201,7 +201,7 @@ AutoeatProteins:AddSwitch("Autoeat Proteins", function(bool)
     Frame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
     Frame.Active = true
     Frame.Draggable = true
-    Frame.Parent = ScreenGui
+    Frame.Parent = window -- Cambiado a window para que se muestre correctamente
 
     -- Create the TextLabel
     local TextLabel = Instance.new("TextLabel")
@@ -264,9 +264,4 @@ AutoeatProteins:AddSwitch("Autoeat Proteins", function(bool)
     StartButton.TextSize = 24
     StartButton.Parent = Frame
     StartButton.Active = true
-    StartButton.Draggable = true
-
-    -- Start the auto consume when the button is clicked
-    StartButton.MouseButton1Click:Connect(function()
-        if StartButton.Text == "Start
-
+   
