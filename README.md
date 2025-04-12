@@ -163,3 +163,98 @@ rs.Heartbeat:Connect(function()
         hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
     end
 end)
+
+local AutoPunch = window:AddTab("Autopunch")
+
+Autopunch:AddSwitch("autopunch", function(bool)
+local function performPunch()
+    local player = game.Players.LocalPlayer
+    player.muscleEvent:FireServer("punch", "leftHand")
+    player.muscleEvent:FireServer("punch", "rightHand")
+end
+
+local PositionAndTeleport = window:AddTab("Autoeat Proteins")
+
+Autoeat Proteins:AddSwitch("Autoeat Proteins", function(bool)
+-- Create the Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 300, 0, 250)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -125)
+Frame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+-- Create the TextLabel
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Size = UDim2.new(1, 0, 0.2, 0)
+TextLabel.Position = UDim2.new(0, 0, 0, 0)
+TextLabel.BackgroundTransparency = 1
+TextLabel.Text = "Auto EAT BOOSTS BY MOHA"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.TextSize = 24
+TextLabel.Parent = Frame
+
+-- Create the Boost selection buttons
+local Boosts = {"Protein Bar", "Ultra Shake", "Energy Bar", "Tough Bar", "Protein Shake"}
+local BoostSelections = {}
+for i, boost in ipairs(Boosts) do
+    local BoostButton = Instance.new("TextButton")
+    BoostButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+    BoostButton.Position = UDim2.new(0.1, 0, 0.2 + (i - 1) * 0.18, 0)
+    BoostButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+    BoostButton.Text = boost
+    BoostButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    BoostButton.Font = Enum.Font.SourceSans
+    BoostButton.TextSize = 18
+    BoostButton.Parent = Frame
+    BoostButton.MouseButton1Click:Connect(function()
+        if BoostSelections[boost] then
+            BoostSelections[boost] = nil
+            BoostButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        else
+            BoostSelections[boost] = true
+            BoostButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        end
+    end)
+end
+
+-- Function to auto consume selected boosts
+local function autoConsumeBoosts()
+    while true do
+        wait(1) -- Adjust the wait time as needed
+        local player = game.Players.LocalPlayer
+        local backpack = player.Backpack
+        for _, item in pairs(backpack:GetChildren()) do
+            if BoostSelections[item.Name] then
+                player.Character.Humanoid:EquipTool(item)
+                item:Activate()
+            end
+        end
+    end
+end
+
+-- Create the Start Button
+local StartButton = Instance.new("TextButton")
+StartButton.Size = UDim2.new(0, 100, 0, 50)
+StartButton.Position = UDim2.new(1, 10, 0, 0) -- Position it to the right side of ScreenGui
+StartButton.BackgroundColor3 = Color3.fromRGB(0, 128, 0)
+StartButton.Text = "Start"
+StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StartButton.Font = Enum.Font.SourceSans
+StartButton.TextSize = 24
+StartButton.Parent = Frame
+StartButton.Active = true
+StartButton.Draggable = true
+
+-- Start the auto consume when the button is clicked
+StartButton.MouseButton1Click:Connect(function()
+    if StartButton.Text == "Start" then
+        StartButton.Text = "Running..."
+        autoConsumeBoosts()
+    else
+        StartButton.Text = "Start"
+        -- Add logic to stop the autoConsumeBoosts function if needed
+    end
+end)
