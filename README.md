@@ -174,39 +174,36 @@ end)
 
 local Proteins = window:AddTab("Proteins")
 
-Proteins:AddSwitch("lockposition", function(bool)
-local Players = game:GetService("Players")
-local vim = game:GetService("VirtualInputManager")
-local player = Players.LocalPlayer
+Proteins:AddSwitch("Autoeat Proteins", function(bool)
+    local Players = game:GetService("Players")
+    local vim = game:GetService("VirtualInputManager")
+    local player = Players.LocalPlayer
 
-local snacks = {
-    "TOUGH Bar",
-    "Protein Egg",
-    "Protein Bar",
-    "Tropical Shake",
-    "Energy Shake",
-    "Energy Bar"
-}
+    local snacks = {
+        "TOUGH Bar",
+        "Protein Bar",
+        "Tropical Shake",
+        "Energy Shake",
+        "Energy Bar"
+    }
 
-task.spawn(function()
-    while true do
-        for _, snackName in ipairs(snacks) do
-
-            local tool = player.Backpack:FindFirstChild(snackName)
-            if tool then
-                tool.Parent = player.Character
-                task.wait(0.1)
+    task.spawn(function()
+        while true do
+            for _, snackName in ipairs(snacks) do
+                local tool = player.Backpack:FindFirstChild(snackName)
+                if tool then
+                    tool.Parent = player.Character
+                    task.wait(0.1)
+                end
             end
+            task.wait(1)
         end
-        task.wait(1)
-    end
-end)
+    end)
 
-task.spawn(function()
-    while true do
-        vim:SendMouseButtonEvent(500, 500, 0, true, game, 1)
-        task.wait()
-        vim:SendMouseButtonEvent(500, 500, 0, false, game, 1)
-    end
-end)
-
+    task.spawn(function()
+        while true do
+            vim:SendMouseButtonEvent(500, 500, 0, true, game, 1)
+            task.wait()
+            vim:SendMouseButtonEvent(500, 500, 0, false, game, 1)
+        end
+    end)
