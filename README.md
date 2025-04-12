@@ -171,3 +171,41 @@ game:GetService("RunService").Heartbeat:Connect(function()
         hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
     end
 end)
+
+local Proteins = window:AddTab("Proteins")
+
+Proteins:AddSwitch("lockposition", function(bool)
+local Players = game:GetService("Players")
+local vim = game:GetService("VirtualInputManager")
+local player = Players.LocalPlayer
+
+local snacks = {
+    "TOUGH Bar",
+    "Protein Egg",
+    "Protein Bar",
+    "Tropical Shake",
+    "Energy Shake",
+    "Energy Bar"
+}
+
+task.spawn(function()
+    while true do
+        for _, snackName in ipairs(snacks) do
+
+            local tool = player.Backpack:FindFirstChild(snackName)
+            if tool then
+                tool.Parent = player.Character
+                task.wait(0.1)
+            end
+        end
+        task.wait(1)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        vim:SendMouseButtonEvent(500, 500, 0, true, game, 1)
+        task.wait()
+        vim:SendMouseButtonEvent(500, 500, 0, false, game, 1)
+    end
+end)
