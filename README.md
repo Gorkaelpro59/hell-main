@@ -269,59 +269,59 @@ Afk:AddSwitch("Anti Afk", function(bool)
 
     local function update(input)
         local delta = input.Position - dragStart
-        
-    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 
-Frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = Frame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
+    Frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+       Frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+
+    -- Create a BillboardGui to display the text in the world
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Parent = game.Workspace
+    billboardGui.Adornee = game.Players.LocalPlayer.Character:WaitForChild("Head") -- Positioning the text above the player's head
+    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+    billboardGui.StudsOffset = Vector3.new(0, 3, 0) -- Adjust the height above the player
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboardGui
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Text = "ANTI-AFK BY Darkiller"
+    textLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+
+    -- Run timer
+    local seconds = 0
+    while true do
+        wait(1)
+        seconds = seconds + 1
+        local hours = math.floor(seconds / 3600)
+        local minutes = math.floor((seconds % 3600) / 60)
+        local secs = seconds % 60
+        TimerLabel.Text = string.format("Time: %02d:%02d:%02d", hours, minutes, secs)
     end
 end)
-
-Frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
-
--- Create a BillboardGui to display the text in the world
-local billboardGui = Instance.new("BillboardGui")
-billboardGui.Parent = game.Workspace
-billboardGui.Adornee = game.Players.LocalPlayer.Character:WaitForChild("Head") -- Positioning the text above the player's head
-billboardGui.Size = UDim2.new(0, 200, 0, 50)
-billboardGui.StudsOffset = Vector3.new(0, 3, 0) -- Adjust the height above the player
-
-local textLabel = Instance.new("TextLabel")
-textLabel.Parent = billboardGui
-textLabel.Size = UDim2.new(1, 0, 1, 0)
-textLabel.Text = "ANTI-AFK BY EL3ASKREY"
-textLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-textLabel.BackgroundTransparency = 1
-textLabel.TextScaled = true
-textLabel.Font = Enum.Font.SourceSansBold
-
--- Run timer
-local seconds = 0
-while true do
-    wait(1)
-    seconds = seconds + 1
-    local hours = math.floor(seconds / 3600)
-    local minutes = math.floor((seconds % 3600) / 60)
-    local secs = seconds % 60
-    TimerLabel.Text = string.format("Time: %02d:%02d:%02d", hours, minutes, secs)
-end
