@@ -8,7 +8,7 @@ local whitelist = {
     "HoloGrindz",
     "Xxdarkiller_10ZKT2",
     "TARZANfeio",
-    "Pathaan122378",
+    "Pathaan122378",    
     "Gorkaelpro59",
 }
 
