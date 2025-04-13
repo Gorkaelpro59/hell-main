@@ -1,6 +1,4 @@
--- Attempt to fix potential nil value issues and stack misplacements without changing the main functions
-
--- Load external library safely
+-- Library loading and whitelist check
 local success, library = pcall(function()
     return loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
 end)
@@ -25,8 +23,8 @@ local whitelist = {
 }
 
 local player = game.Players.LocalPlayer
+if not player then error("LocalPlayer not found!") end
 
--- Check if the player is whitelisted
 local function isWhitelisted(player)
     for _, username in ipairs(whitelist) do
         if player.Name == username then
@@ -40,68 +38,49 @@ if not isWhitelisted(player) then
     error("You are not whitelisted to use this script.")
 end
 
--- Define global variables to avoid nil errors
-local fastRebirth = false     -- used in Fast Rebirth toggle
-local lockpos = false         -- used in lockposition toggle
-local cp = nil                -- stored position for lockpos
-
--- Setup HumanoidRootPart (hrp) reference for position locking
-local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-if not hrp then
-    player.CharacterAdded:Connect(function(char)
-        hrp = char:WaitForChild("HumanoidRootPart")
-    end)
-end
-
--- Dummy gettool function to fix nil reference in fast glitch toggles
-local function gettool()
-    -- Placeholder for the actual gettool implementation.
-end
-
----------------------------------------------------------
--- Paid Tab
+----------------------------------------------------------------
+-- Paid Tab and its functionalities
 local Paid = window:AddTab("Paid")
 
 Paid:AddSwitch("Fast Rebirth", function(bool)
     fastRebirth = bool
     if fastRebirth then
         spawn(function()
-            local a = game:GetService("ReplicatedStorage")
-            local b = game:GetService("Players")
-            local c = b.LocalPlayer
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local Players = game:GetService("Players")
+            local c = Players.LocalPlayer
             
-            -- Check if petsFolder exists
             if not c:FindFirstChild("petsFolder") then
                 error("petsFolder not found.")
                 return
             end
             
-            local d = function()
+            local function d()
                 local f = c.petsFolder
-                for g, h in pairs(f:GetChildren()) do
-                    if h:IsA("Folder") then
-                        for i, j in pairs(h:GetChildren()) do
-                            a.rEvents.equipPetEvent:FireServer("unequipPet", j)
+                for _, folder in pairs(f:GetChildren()) do
+                    if folder:IsA("Folder") then
+                        for _, pet in pairs(folder:GetChildren()) do
+                            ReplicatedStorage.rEvents.equipPetEvent:FireServer("unequipPet", pet)
                         end
                     end
                 end
                 task.wait(.1)
             end
             
-            local k = function(l)
+            local function k(l)
                 d()
                 task.wait(.01)
-                for m, n in pairs(c.petsFolder.Unique:GetChildren()) do
-                    if n.Name == l then
-                        a.rEvents.equipPetEvent:FireServer("equipPet", n)
+                for _, pet in pairs(c.petsFolder.Unique:GetChildren()) do
+                    if pet.Name == l then
+                        ReplicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
                     end
                 end
             end
             
-            local o = function(p)
+            local function o(p)
                 local q = workspace.machinesFolder:FindFirstChild(p)
                 if not q then
-                    for r, s in pairs(workspace:GetChildren()) do
+                    for _, s in pairs(workspace:GetChildren()) do
                         if s:IsA("Folder") and s.Name:find("machines") then
                             q = s:FindFirstChild(p)
                             if q then break end
@@ -111,7 +90,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 return q
             end
             
-            local t = function()
+            local function t()
                 local u = game:GetService("VirtualInputManager")
                 u:SendKeyEvent(true, "E", false, game)
                 task.wait(.1)
@@ -119,7 +98,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
             end
             
             while fastRebirth do
-                local v = c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value or 0
+                local v = (c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value) or 0
                 local w = 10000 + (5000 * v)
                 if c.ultimatesFolder and c.ultimatesFolder:FindFirstChild("Golden Rebirth") then
                     local x = c.ultimatesFolder["Golden Rebirth"].Value
@@ -129,7 +108,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 task.wait(.1)
                 k("Swift Samurai")
                 while c.leaderstats and c.leaderstats.Strength and c.leaderstats.Strength.Value < w do
-                    for y = 1, 10 do
+                    for _ = 1, 10 do
                         c.muscleEvent:FireServer("rep")
                     end
                     task.wait()
@@ -145,9 +124,9 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                         t()
                     until c.Character.Humanoid.Sit
                 end
-                local A = c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value or 0
+                local A = (c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value) or 0
                 repeat
-                    a.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+                    ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
                     task.wait(.1)
                 until c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value > A
                 task.wait()
@@ -179,35 +158,31 @@ local switchHideFrame = Paid:AddSwitch("Hide Frame", function(bool)
     end
 end)
 
----------------------------------------------------------
+----------------------------------------------------------------
 -- Position and Teleport Tab
 local PositionAndTeleport = window:AddTab("Position and Teleport")
+local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+local lockpos = false
+local cp
 
 PositionAndTeleport:AddSwitch("lockposition", function(bool)
-    lockpos = bool  -- Cambia el estado de lockpos según el interruptor
-    if lockpos then
-        if hrp then
-            cp = hrp.Position  -- Guarda la posición actual al activar el bloqueo
-        else
-            error("HumanoidRootPart not found.")
-        end
+    lockpos = bool  -- Toggle lockpos state
+    if lockpos and hrp then
+        cp = hrp.Position  -- Save current position on enabling lock
     end
 end)
 
--- Conexión al evento Heartbeat para bloquear la posición
 game:GetService("RunService").Heartbeat:Connect(function()
     if lockpos and hrp then
-        hrp.CFrame = CFrame.new(cp)  -- Mantiene al jugador en la posición guardada
-        hrp.Velocity = Vector3.new(0, 0, 0)  -- Detiene cualquier movimiento
-        hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
+        hrp.CFrame = CFrame.new(cp)
+        hrp.Velocity = Vector3.new(0, 0, 0)
+        hrp.RotVelocity = Vector3.new(0, 0, 0)
     end
 end)
 
----------------------------------------------------------
+----------------------------------------------------------------
 -- Proteins Tab
-
 local Proteins = window:AddTab("Proteins")
-
 Proteins:AddSwitch("Autoeat Proteins", function(bool)
     local Players = game:GetService("Players")
     local vim = game:GetService("VirtualInputManager")
@@ -243,9 +218,8 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
     end)
 end)
 
----------------------------------------------------------
--- Fast Glitch Tab
-
+----------------------------------------------------------------
+-- Fast Glitch Tab (first instance)
 local fastglitch = window:AddTab("Fast Glitch")
 
 fastglitch:AddSwitch("Fast glitch", function(bool)
@@ -258,13 +232,14 @@ fastglitch:AddSwitch("Fast glitch", function(bool)
             task.wait()
             if game:GetService("Players").LocalPlayer.Durability.Value >= neededDurability then
                 for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                    if v.Name == "neededDurability" and v.Value == neededDurability and
-                       game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                    if v.Name == "neededDurability" and v.Value == neededDurability and 
+                       game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and 
                        game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                        -- Assuming gettool() is defined elsewhere in the script.
                         gettool()
                     end
                 end
@@ -347,9 +322,9 @@ fastglitch:AddSwitch("Fast glitch", function(bool)
             while getgenv().autoFarm do
                 task.wait()
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 750000 then
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 750000 and
-                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                    for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 750000 and 
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and 
                            game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
                             firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
                             firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
@@ -362,82 +337,183 @@ fastglitch:AddSwitch("Fast glitch", function(bool)
             end
         end
     })
+end)
 
-    fastglitch:CreateToggle("LegendGymRock", {
-        Title = "Fast Glitch Legends Rock",
-        Description = "Farm rocks at Legend Gym",
-        Default = false,
-        Callback = function(Value)
-            selectrock = "Legend Gym Rock"
-            getgenv().autoFarm = Value
-            while getgenv().autoFarm do
-                task.wait()
-                if game:GetService("Players").LocalPlayer.Durability.Value >= 1000000 then
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 1000000 and
-                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
-                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-                            gettool()
-                        end
-                    end
-                end
-            end
-        end
-    })
+----------------------------------------------------------------
+-- Fast Glitch Tab (second instance for autopunch)
+local fastglitch_autopunch = window:AddTab("Fast Glitch")
 
-    fastglitch:CreateToggle("MuscleKingGymRock", {
-        Title = "Fast Glitch King Rock",
-        Description = "Farm rocks at Muscle King Gym",
-        Default = false,
-        Callback = function(Value)
-            selectrock = "Muscle King Gym Rock"
-            getgenv().autoFarm = Value
-            while getgenv().autoFarm do
-                task.wait()
-                if game:GetService("Players").LocalPlayer.Durability.Value >= 5000000 then
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 5000000 and
-                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
-                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-                            gettool()
-                        end
-                    end
-                end
-            end
+fastglitch_autopunch:AddSwitch("autopunch", function(bool)
+    local function performPunchActions()
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        if not player then
+            warn("LocalPlayer not found")
+            return
         end
-    })
 
-    fastglitch:CreateToggle("AncientJungleRock", {
-        Title = "Fast Glitch Jungle Rock",
-        Description = "Farm rocks at Ancient Jungle",
-        Default = false,
-        Callback = function(Value)
-            selectrock = "Ancient Jungle Rock"
-            getgenv().autoFarm = Value
-            while getgenv().autoFarm do
-                task.wait()
-                if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
-                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                        if v.Name == "neededDurability" and v.Value == 10000000 and
-                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
-                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-                            gettool()
-                        end
-                    end
-                end
-            end
+        local muscleEvent = player:FindFirstChild("muscleEvent")
+        if not muscleEvent then
+            warn("muscleEvent not found on LocalPlayer")
+            return
         end
-    })
+
+        muscleEvent:FireServer("punch", "leftHand")
+        muscleEvent:FireServer("punch", "rightHand")
+    end
+
+    performPunchActions()
+end)
+
+----------------------------------------------------------------
+-- Anti-AFK Tab and its functionality
+
+-- Variables and connection holders for Anti-AFK
+local antiAfkEnabled = false
+local antiAfkConnections = {}
+
+-- Function to start Anti-AFK
+local function startAntiAfk()
+    antiAfkEnabled = true
+
+    local Players = game:GetService("Players")
+    local VirtualUser = game:GetService("VirtualUser")
+    local UIS = game:GetService("UserInputService")
+    local localPlayer = Players.LocalPlayer
+    if not localPlayer then
+        warn("LocalPlayer not found for Anti-AFK")
+        return
+    end
+
+    -- Disconnect idle by simulating activity
+    local idledConnection = localPlayer.Idled:Connect(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+    table.insert(antiAfkConnections, {conn = idledConnection})
+
+    -- Create GUI to display Anti-AFK status and timer
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "AntiAfkGUI"
+    ScreenGui.Parent = localPlayer:WaitForChild("PlayerGui")
+
+    local Frame = Instance.new("Frame")
+    Frame.Parent = ScreenGui
+    Frame.Size = UDim2.new(0, 250, 0, 90)
+    Frame.Position = UDim2.new(0.5, -125, 0.1, 0)
+    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Frame.BackgroundTransparency = 0
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.Parent = Frame
+    UICorner.CornerRadius = UDim.new(0, 20)
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Parent = Frame
+    TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+    TitleLabel.Text = "ANTI-AFK BY Darkiller"
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 182, 193)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.TextScaled = true
+    TitleLabel.Font = Enum.Font.SourceSansBold
+
+    local TimerLabel = Instance.new("TextLabel")
+    TimerLabel.Parent = Frame
+    TimerLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    TimerLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    TimerLabel.Text = "Time: 00:00:00"
+    TimerLabel.TextColor3 = Color3.fromRGB(255, 182, 193)
+    TimerLabel.BackgroundTransparency = 1
+    TimerLabel.TextScaled = true
+    TimerLabel.Font = Enum.Font.SourceSansBold
+
+    -- Enable dragging functionality for the frame
+    local dragging, dragInput, dragStart, startPos
+    local function update(input)
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    Frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    Frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+
+    -- Create a BillboardGui to display text above the player's head
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Parent = workspace
+    billboardGui.Adornee = localPlayer.Character and localPlayer.Character:WaitForChild("Head")
+    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+    billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboardGui
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Text = "ANTI-AFK BY Darkiller"
+    textLabel.TextColor3 = Color3.fromRGB(255, 182, 193)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSansBold
+
+    -- Run timer to update the timer label
+    spawn(function()
+        local seconds = 0
+        while antiAfkEnabled do
+            wait(1)
+            seconds = seconds + 1
+            local hours = math.floor(seconds / 3600)
+            local minutes = math.floor((seconds % 3600) / 60)
+            local secs = seconds % 60
+            TimerLabel.Text = string.format("Time: %02d:%02d:%02d", hours, minutes, secs)
+        end
+    end)
+end
+
+-- Function to stop Anti-AFK and clean up
+local function stopAntiAfk()
+    antiAfkEnabled = false
+    for _, info in ipairs(antiAfkConnections) do
+        if info.conn and info.conn.Disconnect then
+            info.conn:Disconnect()
+        end
+    end
+    antiAfkConnections = {}
+    local playerGui = game.Players.LocalPlayer and game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+    if playerGui then
+        local gui = playerGui:FindFirstChild("AntiAfkGUI")
+        if gui then
+            gui:Destroy()
+        end
+    end
+end
+
+-- Create Anti-AFK Tab in window
+local antiafk = window:AddTab("antiafk")
+antiafk:AddSwitch("antiafk", function(bool)
+    if bool then
+        startAntiAfk()
+    else
+        stopAntiAfk()
+    end
 end)
