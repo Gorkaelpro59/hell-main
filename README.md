@@ -2,8 +2,10 @@ local success, library = pcall(function()
     return loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
 end)
 
-if not success or not library then
-    error("Failed to load library: " .. tostring(library))
+if not success then
+    error("Error al cargar la biblioteca: " .. tostring(library))
+elseif not library then
+    error("La biblioteca cargada es nil.")
 end
 
 local window = library:AddWindow("HELL clan Script by darkiller", { main_color = Color3.fromRGB(41, 74, 122), min_size = Vector2.new(600, 550), can_resize = false })
