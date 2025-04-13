@@ -1,3 +1,6 @@
+-- Attempt to fix potential nil value issues and stack misplacements without changing the main functions
+
+-- Load external library safely
 local success, library = pcall(function()
     return loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
 end)
@@ -37,6 +40,26 @@ if not isWhitelisted(player) then
     error("You are not whitelisted to use this script.")
 end
 
+-- Define global variables to avoid nil errors
+local fastRebirth = false     -- used in Fast Rebirth toggle
+local lockpos = false         -- used in lockposition toggle
+local cp = nil                -- stored position for lockpos
+
+-- Setup HumanoidRootPart (hrp) reference for position locking
+local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+if not hrp then
+    player.CharacterAdded:Connect(function(char)
+        hrp = char:WaitForChild("HumanoidRootPart")
+    end)
+end
+
+-- Dummy gettool function to fix nil reference in fast glitch toggles
+local function gettool()
+    -- Placeholder for the actual gettool implementation.
+end
+
+---------------------------------------------------------
+-- Paid Tab
 local Paid = window:AddTab("Paid")
 
 Paid:AddSwitch("Fast Rebirth", function(bool)
@@ -156,12 +179,18 @@ local switchHideFrame = Paid:AddSwitch("Hide Frame", function(bool)
     end
 end)
 
+---------------------------------------------------------
+-- Position and Teleport Tab
 local PositionAndTeleport = window:AddTab("Position and Teleport")
 
 PositionAndTeleport:AddSwitch("lockposition", function(bool)
     lockpos = bool  -- Cambia el estado de lockpos según el interruptor
     if lockpos then
-        cp = hrp.Position  -- Guarda la posición actual al activar el bloqueo
+        if hrp then
+            cp = hrp.Position  -- Guarda la posición actual al activar el bloqueo
+        else
+            error("HumanoidRootPart not found.")
+        end
     end
 end)
 
@@ -173,6 +202,9 @@ game:GetService("RunService").Heartbeat:Connect(function()
         hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
     end
 end)
+
+---------------------------------------------------------
+-- Proteins Tab
 
 local Proteins = window:AddTab("Proteins")
 
@@ -211,6 +243,9 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
     end)
 end)
 
+---------------------------------------------------------
+-- Fast Glitch Tab
+
 local fastglitch = window:AddTab("Fast Glitch")
 
 fastglitch:AddSwitch("Fast glitch", function(bool)
@@ -223,7 +258,9 @@ fastglitch:AddSwitch("Fast glitch", function(bool)
             task.wait()
             if game:GetService("Players").LocalPlayer.Durability.Value >= neededDurability then
                 for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-                    if v.Name == "neededDurability" and v.Value == neededDurability and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                    if v.Name == "neededDurability" and v.Value == neededDurability and
+                       game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                       game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
                         firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
@@ -303,95 +340,104 @@ fastglitch:AddSwitch("Fast glitch", function(bool)
     RockSection:AddToggle("EternalGymRock", {
         Title = "Fast Glitch Eternal Rock",
         Description = "Farm rocks at Eternal Gym",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Eternal Gym Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 750000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 750000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Eternal Gym Rock"
+            getgenv().autoFarm = Value
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 750000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 750000 and
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("LegendGymRock", {
-	Title = "Fast Glitch Legends Rock",
-	Description = "Farm rocks at Legend Gym",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Legend Gym Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 1000000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 1000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    fastglitch:CreateToggle("LegendGymRock", {
+        Title = "Fast Glitch Legends Rock",
+        Description = "Farm rocks at Legend Gym",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Legend Gym Rock"
+            getgenv().autoFarm = Value
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 1000000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 1000000 and
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("MuscleKingGymRock", {
-	Title = "Fast Glitch King Rock",
-	Description = "Farm rocks at Muscle King Gym",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Muscle King Gym Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 5000000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 5000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    fastglitch:CreateToggle("MuscleKingGymRock", {
+        Title = "Fast Glitch King Rock",
+        Description = "Farm rocks at Muscle King Gym",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Muscle King Gym Rock"
+            getgenv().autoFarm = Value
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 5000000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 5000000 and
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("AncientJungleRock", {
-	Title = "Fast Glitch Jungle Rock",
-	Description = "Farm rocks at Ancient Jungle",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Ancient Jungle Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 10000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})  
+    fastglitch:CreateToggle("AncientJungleRock", {
+        Title = "Fast Glitch Jungle Rock",
+        Description = "Farm rocks at Ancient Jungle",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Ancient Jungle Rock"
+            getgenv().autoFarm = Value
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 10000000 and
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end
+    })
+end)
