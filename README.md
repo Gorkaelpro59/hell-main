@@ -51,7 +51,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 return
             end
             
-            local d = function(e)
+            local d = function()
                 local f = c.petsFolder
                 for g, h in pairs(f:GetChildren()) do
                     if h:IsA("Folder") then
@@ -165,7 +165,7 @@ end)
 
 -- Conexión al evento Heartbeat para bloquear la posición
 game:GetService("RunService").Heartbeat:Connect(function()
-    if lockpos then
+    if lockpos and hrp then
         hrp.CFrame = CFrame.new(cp)  -- Mantiene al jugador en la posición guardada
         hrp.Velocity = Vector3.new(0, 0, 0)  -- Detiene cualquier movimiento
         hrp.RotVelocity = Vector3.new(0, 0, 0)  -- Detiene la rotación
@@ -209,144 +209,98 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
     end)
 end)
 
-local fastglitch = window:AddTab("fastglitch")
+local fastglitch = window:AddTab("Fast Glitch")
 
 fastglitch:AddSwitch("Fast glitch", function(bool)
-local RockSection = Tabs.FastGlitch:CreateSection("Fast Glitch Rocks")
-local selectrock = ""
-local Toggle = Tabs.FastGlitch:CreateToggle("TinyIslandRock", {
-	Title = "Fast Glitch Tiny Rock",
-	Description = "Farm rocks at Tiny Island",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Tiny Island Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 0 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 0 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    local RockSection = fastglitch:CreateSection("Fast Glitch Rocks")
+    local selectrock = ""
+    getgenv().autoFarm = bool
 
-local Toggle = Tabs.FastGlitch:CreateToggle("StarterIslandRock", {
-	Title = "Fast Glitch Starter Island Rock",
-	Description = "Farm rocks at Starter Island",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Starter Island Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 100 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 100 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    local function farmRock(neededDurability, rockName)
+        while getgenv().autoFarm do
+            task.wait()
+            if game:GetService("Players").LocalPlayer.Durability.Value >= neededDurability then
+                for _, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                    if v.Name == "neededDurability" and v.Value == neededDurability and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+                        firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                        firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                        firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                        firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                        gettool()
+                    end
+                end
+            end
+        end
+    end
 
-local Toggle = Tabs.FastGlitch:CreateToggle("LegendBeachRock", {
-	Title = "Fast Glitch Legend Beach Rock",
-	Description = "Farm rocks at Legend Beach",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Legend Beach Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 5000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 5000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    RockSection:AddToggle("TinyIslandRock", {
+        Title = "Fast Glitch Tiny Rock",
+        Description = "Farm rocks at Tiny Island",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Tiny Island Rock"
+            getgenv().autoFarm = Value
+            if Value then
+                farmRock(0, "Tiny Island Rock")
+            end
+        end
+    })
 
-function gettool()
-	for i, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-		if v.Name == "Punch" and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-			game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
-		end
-	end
-	game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-	game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-end
+    RockSection:AddToggle("StarterIslandRock", {
+        Title = "Fast Glitch Starter Island Rock",
+        Description = "Farm rocks at Starter Island",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Starter Island Rock"
+            getgenv().autoFarm = Value
+            if Value then
+                farmRock(100, "Starter Island Rock")
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("FrostGymRock", {
-	Title = "Fast Glitch Frost Rock",
-	Description = "Farm rocks at Frost Gym",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Frost Gym Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 150000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 150000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    RockSection:AddToggle("LegendBeachRock", {
+        Title = "Fast Glitch Legend Beach Rock",
+        Description = "Farm rocks at Legend Beach",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Legend Beach Rock"
+            getgenv().autoFarm = Value
+            if Value then
+                farmRock(5000, "Legend Beach Rock")
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("MythicalGymRock", {
-	Title = "Fast Glitch Mythical Rock",
-	Description = "Farm rocks at Mythical Gym",
-	Default = false,
-	Callback = function(Value)
-		selectrock = "Mythical Gym Rock"
-		getgenv().autoFarm = Value
-		while getgenv().autoFarm do
-			task.wait()
-			if game:GetService("Players").LocalPlayer.Durability.Value >= 400000 then
-				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
-					if v.Name == "neededDurability" and v.Value == 400000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
-						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
-						gettool()
-					end
-				end
-			end
-		end
-	end
-})
+    RockSection:AddToggle("FrostGymRock", {
+        Title = "Fast Glitch Frost Rock",
+        Description = "Farm rocks at Frost Gym",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Frost Gym Rock"
+            getgenv().autoFarm = Value
+            if Value then
+                farmRock(150000, "Frost Gym Rock")
+            end
+        end
+    })
 
-local Toggle = Tabs.FastGlitch:CreateToggle("EternalGymRock", {
-	Title = "Fast Glitch Eternal Rock",
-	Description = "Farm rocks at Eternal Gym",
+    RockSection:AddToggle("MythicalGymRock", {
+        Title = "Fast Glitch Mythical Rock",
+        Description = "Farm rocks at Mythical Gym",
+        Default = false,
+        Callback = function(Value)
+            selectrock = "Mythical Gym Rock"
+            getgenv().autoFarm = Value
+            if Value then
+                farmRock(400000, "Mythical Gym Rock")
+            end
+        end
+    })
+
+    RockSection:AddToggle("EternalGymRock", {
+        Title = "Fast Glitch Eternal Rock",
+        Description = "Farm rocks at Eternal Gym",
 	Default = false,
 	Callback = function(Value)
 		selectrock = "Eternal Gym Rock"
