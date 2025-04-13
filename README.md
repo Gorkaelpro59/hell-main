@@ -209,119 +209,233 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
     end)
 end)
 
-local Afk = window:AddTab("Afk")
+local fastglitch = window:AddTab("fastglitch")
 
-Afk:AddSwitch("Anti Afk", function(bool)
-    local Players = game:GetService("Players")
-    local VirtualUser  = game:GetService("VirtualUser ")
-    local UIS = game:GetService("User InputService")
+fastglitch:AddSwitch("Fast glitch", function(bool)
+local RockSection = Tabs.FastGlitch:CreateSection("Fast Glitch Rocks")
+local selectrock = ""
+local Toggle = Tabs.FastGlitch:CreateToggle("TinyIslandRock", {
+	Title = "Fast Glitch Tiny Rock",
+	Description = "Farm rocks at Tiny Island",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Tiny Island Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 0 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 0 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    Players.LocalPlayer.Idled:Connect(function()
-        Virtual:User CaptureController()
-        Virtual:User ClickButton2(Vector2.new())
-    end)
+local Toggle = Tabs.FastGlitch:CreateToggle("StarterIslandRock", {
+	Title = "Fast Glitch Starter Island Rock",
+	Description = "Farm rocks at Starter Island",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Starter Island Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 100 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 100 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    -- Create GUI
-    local ScreenGui = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
-    local TitleLabel = Instance.new("TextLabel")
-    local TimerLabel = Instance.new("TextLabel")
-    local UICorner = Instance.new("UICorner")  -- Add UICorner to adjust corners
+local Toggle = Tabs.FastGlitch:CreateToggle("LegendBeachRock", {
+	Title = "Fast Glitch Legend Beach Rock",
+	Description = "Farm rocks at Legend Beach",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Legend Beach Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 5000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 5000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+function gettool()
+	for i, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+		if v.Name == "Punch" and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+			game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+		end
+	end
+	game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+	game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+end
 
-    -- Background (White)
-    Frame.Parent = ScreenGui
-    Frame.Size = UDim2.new(0, 250, 0, 90)
-    Frame.Position = UDim2.new(0.5, -125, 0.1, 0)
-    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White
-    Frame.BackgroundTransparency = 0 -- Not Transparent
+local Toggle = Tabs.FastGlitch:CreateToggle("FrostGymRock", {
+	Title = "Fast Glitch Frost Rock",
+	Description = "Farm rocks at Frost Gym",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Frost Gym Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 150000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 150000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    -- Add UICorner to adjust rounded corners
-    UICorner.Parent = Frame
-    UICorner.CornerRadius = UDim.new(0, 20) -- Set corner radius
+local Toggle = Tabs.FastGlitch:CreateToggle("MythicalGymRock", {
+	Title = "Fast Glitch Mythical Rock",
+	Description = "Farm rocks at Mythical Gym",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Mythical Gym Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 400000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 400000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    -- Main text (Light Pink)
-    TitleLabel.Parent = Frame
-    TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
-    TitleLabel.Text = "ANTI-AFK BY Darkiller"
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.TextScaled = true
-    TitleLabel.Font = Enum.Font.SourceSansBold
+local Toggle = Tabs.FastGlitch:CreateToggle("EternalGymRock", {
+	Title = "Fast Glitch Eternal Rock",
+	Description = "Farm rocks at Eternal Gym",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Eternal Gym Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 750000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 750000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    -- Timer text (Light Pink)
-    TimerLabel.Parent = Frame
-    TimerLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    TimerLabel.Position = UDim2.new(0, 0, 0.5, 0)
-    TimerLabel.Text = "Time: 00:00:00"
-    TimerLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-    TimerLabel.BackgroundTransparency = 1
-    TimerLabel.TextScaled = true
-    TimerLabel.Font = Enum.Font.SourceSansBold
+local Toggle = Tabs.FastGlitch:CreateToggle("LegendGymRock", {
+	Title = "Fast Glitch Legends Rock",
+	Description = "Farm rocks at Legend Gym",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Legend Gym Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 1000000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 1000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    -- Dragging functionality
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+local Toggle = Tabs.FastGlitch:CreateToggle("MuscleKingGymRock", {
+	Title = "Fast Glitch King Rock",
+	Description = "Farm rocks at Muscle King Gym",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Muscle King Gym Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 5000000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 5000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})
 
-    local function update(input)
-        local delta = input.Position - dragStart
-        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-
-    Frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Frame.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-       Frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UIS.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
-
-    -- Create a BillboardGui to display the text in the world
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Parent = game.Workspace
-    billboardGui.Adornee = game.Players.LocalPlayer.Character:WaitForChild("Head") -- Positioning the text above the player's head
-    billboardGui.Size = UDim2.new(0, 200, 0, 50)
-    billboardGui.StudsOffset = Vector3.new(0, 3, 0) -- Adjust the height above the player
-
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Parent = billboardGui
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.Text = "ANTI-AFK BY Darkiller"
-    textLabel.TextColor3 = Color3.fromRGB(255, 182, 193) -- Light Pink
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextScaled = true
-    textLabel.Font = Enum.Font.SourceSansBold
-
-    -- Run timer
-    local seconds = 0
-    while true do
-        wait(1)
-        seconds = seconds + 1
-        local hours = math.floor(seconds / 3600)
-        local minutes = math.floor((seconds % 3600) / 60)
-        local secs = seconds % 60
-        TimerLabel.Text = string.format("Time: %02d:%02d:%02d", hours, minutes, secs)
-    end
-end)
+local Toggle = Tabs.FastGlitch:CreateToggle("AncientJungleRock", {
+	Title = "Fast Glitch Jungle Rock",
+	Description = "Farm rocks at Ancient Jungle",
+	Default = false,
+	Callback = function(Value)
+		selectrock = "Ancient Jungle Rock"
+		getgenv().autoFarm = Value
+		while getgenv().autoFarm do
+			task.wait()
+			if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
+				for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+					if v.Name == "neededDurability" and v.Value == 10000000 and game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+						firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+						gettool()
+					end
+				end
+			end
+		end
+	end
+})  
