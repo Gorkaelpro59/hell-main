@@ -1,3 +1,32 @@
+-- Ensure LocalPlayer and Character exist
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+if not player then
+    error("LocalPlayer not found!")
+end
+if not player.Character then
+    player.CharacterAdded:Wait()
+end
+
+-- Wait for HumanoidRootPart to be available
+local function getHumanoidRootPart(character)
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        hrp = character:WaitForChild("HumanoidRootPart")
+    end
+    return hrp
+end
+
+-- Dummy definition for gettool if it doesn't exist to prevent nil errors.
+if not gettool then
+    function gettool()
+        -- This is a placeholder. The actual implementation should be provided elsewhere.
+    end
+end
+
+-- Global flag for fast rebirth
+local fastRebirth = false
+
 -- Library loading and whitelist check
 local success, library = pcall(function()
     return loadstring(game:HttpGet("https://pastebin.com/raw/Abg3RkND", true))()
@@ -21,9 +50,6 @@ local whitelist = {
     "Pathaan122378",    
     "Gorkaelpro59",
 }
-
-local player = game.Players.LocalPlayer
-if not player then error("LocalPlayer not found!") end
 
 local function isWhitelisted(player)
     for _, username in ipairs(whitelist) do
@@ -49,12 +75,12 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
             local ReplicatedStorage = game:GetService("ReplicatedStorage")
             local Players = game:GetService("Players")
             local c = Players.LocalPlayer
-            
+
             if not c:FindFirstChild("petsFolder") then
                 error("petsFolder not found.")
                 return
             end
-            
+
             local function d()
                 local f = c.petsFolder
                 for _, folder in pairs(f:GetChildren()) do
@@ -66,7 +92,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 end
                 task.wait(.1)
             end
-            
+
             local function k(l)
                 d()
                 task.wait(.01)
@@ -76,7 +102,7 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                     end
                 end
             end
-            
+
             local function o(p)
                 local q = workspace.machinesFolder:FindFirstChild(p)
                 if not q then
@@ -89,14 +115,14 @@ Paid:AddSwitch("Fast Rebirth", function(bool)
                 end
                 return q
             end
-            
+
             local function t()
                 local u = game:GetService("VirtualInputManager")
                 u:SendKeyEvent(true, "E", false, game)
                 task.wait(.1)
                 u:SendKeyEvent(false, "E", false, game)
             end
-            
+
             while fastRebirth do
                 local v = (c.leaderstats and c.leaderstats.Rebirths and c.leaderstats.Rebirths.Value) or 0
                 local w = 10000 + (5000 * v)
@@ -161,7 +187,7 @@ end)
 ----------------------------------------------------------------
 -- Position and Teleport Tab
 local PositionAndTeleport = window:AddTab("Position and Teleport")
-local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+local hrp = getHumanoidRootPart(player.Character)
 local lockpos = false
 local cp
 
@@ -184,10 +210,7 @@ end)
 -- Proteins Tab
 local Proteins = window:AddTab("Proteins")
 Proteins:AddSwitch("Autoeat Proteins", function(bool)
-    local Players = game:GetService("Players")
-    local vim = game:GetService("VirtualInputManager")
-    local player = Players.LocalPlayer
-
+    local VirtualInputManager = game:GetService("VirtualInputManager")
     local snacks = {
         "TOUGH Bar",
         "Protein Bar",
@@ -211,9 +234,9 @@ Proteins:AddSwitch("Autoeat Proteins", function(bool)
 
     task.spawn(function()
         while true do
-            vim:SendMouseButtonEvent(500, 500, 0, true, game, 1)
+            VirtualInputManager:SendMouseButtonEvent(500, 500, 0, true, game, 1)
             task.wait()
-            vim:SendMouseButtonEvent(500, 500, 0, false, game, 1)
+            VirtualInputManager:SendMouseButtonEvent(500, 500, 0, false, game, 1)
         end
     end)
 end)
@@ -345,13 +368,6 @@ local fastglitch_autopunch = window:AddTab("Fast Glitch")
 
 fastglitch_autopunch:AddSwitch("autopunch", function(bool)
     local function performPunchActions()
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-        if not player then
-            warn("LocalPlayer not found")
-            return
-        end
-
         local muscleEvent = player:FindFirstChild("muscleEvent")
         if not muscleEvent then
             warn("muscleEvent not found on LocalPlayer")
@@ -376,7 +392,6 @@ local antiAfkConnections = {}
 local function startAntiAfk()
     antiAfkEnabled = true
 
-    local Players = game:GetService("Players")
     local VirtualUser = game:GetService("VirtualUser")
     local UIS = game:GetService("UserInputService")
     local localPlayer = Players.LocalPlayer
@@ -499,7 +514,7 @@ local function stopAntiAfk()
         end
     end
     antiAfkConnections = {}
-    local playerGui = game.Players.LocalPlayer and game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+    local playerGui = player:FindFirstChild("PlayerGui")
     if playerGui then
         local gui = playerGui:FindFirstChild("AntiAfkGUI")
         if gui then
