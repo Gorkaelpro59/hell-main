@@ -49,6 +49,7 @@ local whitelist = {
     "TARZANfeio",
     "Pathaan122378",    
     "Gorkaelpro59",
+    "VYXONON_TOP",
 }
 
 local function isWhitelisted(player)
